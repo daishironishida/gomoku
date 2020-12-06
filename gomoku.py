@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 import numpy as np
 
 class GomokuBoard:
@@ -15,11 +16,44 @@ class GomokuBoard:
         return self.__size
 
     def add_piece(self, coord, side):
+        """
+        Place a piece on the board
+
+        Parameters
+        ----------
+        coord : np.array
+            coordinate to place the piece
+        side : int
+            side of the piece
+
+        Returns
+        -------
+        success: bool
+            validity of the move
+        winner: int
+            winning side if it exists, -1 if tied, 0 otherwise
+        board: np.array
+            state of the board after the move
+        """
+
+        if not self.__is_on_board(coord):
+            print(f'Invalid coordinate: {coord}')
+            return False, 0, self.__board
+
         print(f'Placing {side} at {coord}')
         self.__board[coord[0], coord[1]] = side
         print(self)
+
         if self.__check_win(coord, side):
+            winner = side
             print(f'{side} wins!')
+        elif self.__check_tie():
+            winner = -1
+            print('game tied!')
+        else:
+            winner = 0
+
+        return True, winner, self.__board
 
     def __is_on_board(self, coord):
         return coord[0] >= 0 and coord[0] < self.__size \
@@ -27,7 +61,6 @@ class GomokuBoard:
     
     def __get_piece(self, coord):
         if not self.__is_on_board(coord):
-            print(f'Invalid coordinate: {coord}')
             return 0
         return self.__board[coord[0], coord[1]]
 
@@ -42,11 +75,43 @@ class GomokuBoard:
                 return True
         return False
 
+    def __check_tie(self):
+        # TODO implement (combine with win check?)
+        return False
+
     def __repr__(self):
         return str(self.__board)
 
+class BaseAgent(metaclass=ABCMeta):
+    @abstractmethod
+    def move(self, board):
+        pass
+
+class RandomAgent(BaseAgent):
+    def __init__(self, size):
+        self.__size = size
+
+    def move(self, board):
+        return np.random.randint(0, self.__size, 2)
+
 if __name__ == "__main__":
     # sample run
-    board = GomokuBoard(7)
-    for i in range(1,6):
-        board.add_piece(np.array((i,2)), 1)
+    def make_agent_move(board, agent, side):
+        while True:
+            move = agent.move(board)
+            success, winner, board = board.add_piece(move, side)
+            if success:
+                return winner != 0
+
+    GAME_SIZE = 7
+
+    game_board = GomokuBoard(GAME_SIZE)
+    agent1 = RandomAgent(GAME_SIZE)
+    agent2 = RandomAgent(GAME_SIZE)
+
+    while True:
+        if make_agent_move(game_board, agent1, 1):
+            break
+        if make_agent_move(game_board, agent2, 2):
+            break
+    print('Game done')
