@@ -36,7 +36,7 @@ class GomokuBoard:
             state of the board after the move
         """
 
-        if not self.__is_on_board(coord):
+        if not self.__is_on_board(coord) or self.__get_piece(coord) > 0:
             print(f'Invalid coordinate: {coord}')
             return False, 0, self.__board
 
