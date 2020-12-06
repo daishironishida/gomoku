@@ -76,8 +76,7 @@ class GomokuBoard:
         return False
 
     def __check_tie(self):
-        # TODO implement (combine with win check?)
-        return False
+        return np.all(self.__board != 0)
 
     def __repr__(self):
         return str(self.__board)
