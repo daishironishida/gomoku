@@ -110,16 +110,16 @@ class ConsoleAgent(BaseAgent):
 
 if __name__ == "__main__":
     # sample run
-    def make_agent_move(board, agent, side):
+    def make_agent_move(game, agent, side):
         while True:
-            move = agent.move(board)
-            success, winner, board = board.add_piece(move, side)
+            move = agent.move(game)
+            success, winner, board = game.add_piece(move, side)
             if success:
                 return winner != 0
 
     GAME_SIZE = 7
 
-    game_board = GomokuBoard(GAME_SIZE)
+    gomoku_board = GomokuBoard(GAME_SIZE)
     agent1 = RandomAgent(GAME_SIZE)
     agent2 = ConsoleAgent(2)
 
@@ -127,8 +127,8 @@ if __name__ == "__main__":
     assert isinstance(agent2, BaseAgent)
 
     while True:
-        if make_agent_move(game_board, agent1, 1):
+        if make_agent_move(gomoku_board, agent1, 1):
             break
-        if make_agent_move(game_board, agent2, 2):
+        if make_agent_move(gomoku_board, agent2, 2):
             break
     print('Game done')
