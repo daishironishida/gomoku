@@ -41,7 +41,7 @@ class GomokuBoard:
             return False, 0, self.__board
 
         print(f'Placing {side} at {coord}')
-        self.__board[coord[0], coord[1]] = side
+        self.__board[coord[1], coord[0]] = side
         print(self)
 
         if self.__check_win(coord, side):
