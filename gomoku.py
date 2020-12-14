@@ -62,7 +62,7 @@ class GomokuBoard:
     def __get_piece(self, coord):
         if not self.__is_on_board(coord):
             return 0
-        return self.__board[coord[0], coord[1]]
+        return self.__board[coord[1], coord[0]]
 
     def __check_win(self, coord, side):
         for direction in self.__DIRECTIONS:
