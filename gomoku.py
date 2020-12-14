@@ -112,8 +112,9 @@ class ConsoleAgent(BaseAgent):
 if __name__ == "__main__":
     # sample run
     def make_agent_move(game, agent, side):
+        board = game.get_board()
         while True:
-            move = agent.move(game)
+            move = agent.move(board)
             success, winner, board = game.add_piece(move, side)
             if success:
                 return winner != 0
