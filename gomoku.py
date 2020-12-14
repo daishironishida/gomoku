@@ -100,11 +100,8 @@ class BaseAgent(metaclass=ABCMeta):
         pass
 
 class RandomAgent(BaseAgent):
-    def __init__(self, size):
-        self.__size = size
-
     def move(self, board):
-        return np.random.randint(0, self.__size, 2)
+        return np.random.randint(0, board.get_size(), 2)
 
 class ConsoleAgent(BaseAgent):
     def __init__(self, side):
