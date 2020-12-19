@@ -2,7 +2,7 @@ import numpy as np
 
 from board import GomokuBoard
 from agent.base import BaseAgent, RandomAgent, ConsoleAgent
-from agent.greedy import GreedyAgent
+from agent.greedy import GreedyAgent, GreedyDefendingAgent
 
 class GameManager:
     def __init__(self, size=19):
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     GAME_SIZE = 7
 
     game = GameManager(GAME_SIZE)
-    agent1 = GreedyAgent(1)
+    agent1 = GreedyDefendingAgent(1)
     agent2 = ConsoleAgent(2)
 
     assert isinstance(agent1, BaseAgent)
