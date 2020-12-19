@@ -7,5 +7,6 @@ Python >= 3.6
 ## Run
 
 ```
-python gomoku.py
+cd gomoku
+python main.py
 ```
