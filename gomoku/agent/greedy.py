@@ -1,4 +1,6 @@
 import numpy as np
+import operator
+import random
 
 from .base import BaseAgent
 
@@ -80,17 +82,32 @@ def get_greedy_move(board, side):
 
     # starting with the maximum count, look for possible moves and return the
     # first valid one found
-    max_count = np.amax(combinations//32)
-    for count in range(max_count, -1, -1):
-        for dir, row, col in zip(*np.where(combinations//32 == count)):
+    piece_count_max = np.amax(combinations//32)
+    for piece_count in range(piece_count_max, -1, -1):
+        potential_moves = []
+        for dir, row, col in zip(*np.where(combinations//32 == piece_count)):
             flags = combinations[dir, row, col] % 32
             for offset in range(5):
                 # find a remaining coordinate from the slot
                 if flags & (1 << offset) == 0:
                     coord = np.array([col, row]) + offset * DIRECTIONS[dir]
-                    # this check may be unnecessary
-                    if board.is_on_board(coord):
-                        return coord, count+1
+                    potential_moves.append(coord)
+
+        if potential_moves:
+            # find most prevalent of potential moves
+            move_count_map = {}
+            for coord in potential_moves:
+                if (tuple(coord)) in move_count_map:
+                    move_count_map[tuple(coord)] += 1
+                else:
+                    move_count_map[tuple(coord)] = 1
+            max_moves = []
+            for coord, move_count in move_count_map.items():
+                if move_count == max(move_count_map.values()):
+                    max_moves.append(coord)
+
+            # return randomly from most prevalent moves
+            return np.array(random.choice(max_moves)), piece_count + 1
 
     # fallback: should not reach
     print('Fallback: return random value')
