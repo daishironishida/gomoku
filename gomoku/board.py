@@ -1,10 +1,14 @@
 import numpy as np
+import sys
 
 class GomokuBoard:
     __NUM_REQUIRED = 5
     __DIRECTIONS = np.array([[1,0], [1,1], [0,1], [-1,1]])
 
     def __init__(self, size):
+        if size < self.__NUM_REQUIRED:
+            print(f'Invalid size: {size}')
+            sys.exit()
         self.__size = size
         self.__board = np.zeros((self.__size, self.__size), np.int8)
 
