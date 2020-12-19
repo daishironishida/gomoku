@@ -1,23 +1,16 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
 
-class GomokuBoard:
-    __NUM_REQUIRED = 5
-    __DIRECTIONS = np.array([[1,0], [1,1], [0,1], [-1,1]])
-    
+class GameManager:
     def __init__(self, size=19):
-        self.__size = size
-        self.__board = np.zeros((self.__size, self.__size), np.int8)
+        self.__board = GomokuBoard(size)
 
     def get_board(self):
         return self.__board
 
-    def get_size(self):
-        return self.__size
-
     def add_piece(self, coord, side):
         """
-        Place a piece on the board
+        Place a piece on the board and check ending criteria
 
         Parameters
         ----------
@@ -32,22 +25,17 @@ class GomokuBoard:
             validity of the move
         winner: int
             winning side if it exists, -1 if tied, 0 otherwise
-        board: np.array
+        board: GomokuBoard
             state of the board after the move
         """
 
-        if not self.__is_on_board(coord) or self.__get_piece(coord) > 0:
-            print(f'Invalid coordinate: {coord}')
+        if not self.__board.add_piece(coord, side):
             return False, 0, self.__board
 
-        print(f'Placing {side} at {coord}')
-        self.__board[coord[1], coord[0]] = side
-        print(self)
-
-        if self.__check_win(coord, side):
+        if self.__board.check_win(coord, side):
             winner = side
             print(f'{side} wins!')
-        elif self.__check_tie():
+        elif self.__board.check_tie():
             winner = -1
             print('game tied!')
         else:
@@ -55,20 +43,44 @@ class GomokuBoard:
 
         return True, winner, self.__board
 
-    def __is_on_board(self, coord):
+class GomokuBoard:
+    __NUM_REQUIRED = 5
+    __DIRECTIONS = np.array([[1,0], [1,1], [0,1], [-1,1]])
+    
+    def __init__(self, size):
+        self.__size = size
+        self.__board = np.zeros((self.__size, self.__size), np.int8)
+
+    def get_board(self):
+        return self.__board
+
+    def get_size(self):
+        return self.__size
+
+    def add_piece(self, coord, side):
+        if not self.is_on_board(coord) or self.get_piece(coord) > 0:
+            print(f'Invalid coordinate: {coord}')
+            return False
+
+        print(f'Placing {side} at {coord}')
+        self.__board[coord[1], coord[0]] = side
+        print(self)
+        return True
+
+    def is_on_board(self, coord):
         return coord[0] >= 0 and coord[0] < self.__size \
             and coord[1] >= 0 and coord[1] < self.__size
     
-    def __get_piece(self, coord):
-        if not self.__is_on_board(coord):
+    def get_piece(self, coord):
+        if not self.is_on_board(coord):
             return 0
         return self.__board[coord[1], coord[0]]
 
-    def __check_win(self, coord, side):
+    def check_win(self, coord, side):
         for direction in self.__DIRECTIONS:
             piece_count = 0
             for offset in range(-self.__NUM_REQUIRED+1, self.__NUM_REQUIRED):
-                if self.__get_piece(coord + direction * offset) == side:
+                if self.get_piece(coord + direction * offset) == side:
                     piece_count += 1
                     if piece_count == self.__NUM_REQUIRED:
                         return True
@@ -76,7 +88,7 @@ class GomokuBoard:
                     piece_count = 0
         return False
 
-    def __check_tie(self):
+    def check_tie(self):
         return np.all(self.__board != 0)
 
     def __repr__(self):
@@ -88,11 +100,8 @@ class BaseAgent(metaclass=ABCMeta):
         pass
 
 class RandomAgent(BaseAgent):
-    def __init__(self, size):
-        self.__size = size
-
     def move(self, board):
-        return np.random.randint(0, self.__size, 2)
+        return np.random.randint(0, board.get_size(), 2)
 
 class ConsoleAgent(BaseAgent):
     def __init__(self, side):
@@ -109,27 +118,66 @@ class ConsoleAgent(BaseAgent):
             except Exception as e:
                 print('Invalid input! Format: [x-coord],[y-coord]')
 
+class GreedyAgent(BaseAgent):
+    __NUM_REQUIRED = 5
+    __DIRECTIONS = np.array([[1,0], [1,1], [0,1], [-1,1]])
+
+    def __init__(self, side):
+        self.__side = side
+
+    def move(self, board):
+        # value is separated into two parts:
+        # rightmost 5 bits: indicates offsets at which piece was found
+        # value divided by 64: number of pieces found
+        combinations = np.zeros((4,) + board.get_board().shape, np.int)
+
+        for row in range(board.get_size()):
+            for col in range(board.get_size()):
+                for dir_idx, direction in enumerate(self.__DIRECTIONS):
+                    for offset in range(self.__NUM_REQUIRED):
+                        base = np.array([col, row]) + direction * offset
+                        if board.get_piece(base) == self.__side:
+                            combinations[dir_idx, row, col] += 32 + (1 << offset)
+                        elif not board.is_on_board(base) or board.get_piece(base) > 0:
+                            combinations[dir_idx, row, col] = -1
+                            break
+
+        max_count = np.amax(combinations//32)
+        for count in range(max_count, -1, -1):
+            for dir, row, col in zip(*np.where(combinations//32 == count)):
+                flags = combinations[dir, row, col] % 32
+                for offset in range(5):
+                    if flags & (1 << offset) == 0:
+                        coord = np.array([col, row]) + offset * self.__DIRECTIONS[dir]
+                        if board.is_on_board(coord):
+                            return coord
+
+        # fallback: should not reach
+        print('Fallback: return random value')
+        return np.random.randint(0, board.get_size(), 2)
+
 if __name__ == "__main__":
     # sample run
     def make_agent_move(game, agent, side):
+        board = game.get_board()
         while True:
-            move = agent.move(game)
+            move = agent.move(board)
             success, winner, board = game.add_piece(move, side)
             if success:
                 return winner != 0
 
     GAME_SIZE = 7
 
-    gomoku_board = GomokuBoard(GAME_SIZE)
-    agent1 = RandomAgent(GAME_SIZE)
+    game = GameManager(GAME_SIZE)
+    agent1 = GreedyAgent(1)
     agent2 = ConsoleAgent(2)
 
     assert isinstance(agent1, BaseAgent)
     assert isinstance(agent2, BaseAgent)
 
     while True:
-        if make_agent_move(gomoku_board, agent1, 1):
+        if make_agent_move(game, agent1, 1):
             break
-        if make_agent_move(gomoku_board, agent2, 2):
+        if make_agent_move(game, agent2, 2):
             break
     print('Game done')
