@@ -6,6 +6,7 @@ from gomoku.agent.base import BaseAgent, RandomAgent, ConsoleAgent
 from gomoku.agent.greedy import GreedyAgent, GreedyDefendingAgent
 from gomoku.board import GomokuBoard
 from gomoku.manager import GameManager
+from gomoku.util import Side
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -21,7 +22,7 @@ if __name__ == "__main__":
             move = agent.move(board)
             success, winner, board = game.add_piece(move, side)
             if success:
-                return winner != 0
+                return winner != Side.NONE
 
     def get_agent_class(name):
         if name == "random":
@@ -37,12 +38,12 @@ if __name__ == "__main__":
             sys.exit()
 
     game = GameManager(args.size)
-    agent1 = get_agent_class(args.agent1)(1)
-    agent2 = get_agent_class(args.agent2)(2)
+    agent1 = get_agent_class(args.agent1)(Side(1))
+    agent2 = get_agent_class(args.agent2)(Side(2))
 
     while True:
-        if make_agent_move(game, agent1, 1):
+        if make_agent_move(game, agent1, Side(1)):
             break
-        if make_agent_move(game, agent2, 2):
+        if make_agent_move(game, agent2, Side(2)):
             break
     print('Game done')

@@ -2,14 +2,19 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 from gomoku.board import GomokuBoard
+from gomoku.util import Side
 
 class BaseAgent(metaclass=ABCMeta):
-    def __init__(self, side: int):
+    def __init__(self, side: Side):
+        assert side.is_player()
         self._side = side
 
     @abstractmethod
     def move(self, board: GomokuBoard):
         raise NotImplementedError("Agent must have move() method")
+
+    def get_opponent(self) -> Side:
+        return self._side.get_opponent()
 
 class RandomAgent(BaseAgent):
     def move(self, board: GomokuBoard) -> np.array:

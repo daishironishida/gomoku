@@ -118,12 +118,6 @@ class GreedyAgent(BaseAgent):
         return result
 
 class GreedyDefendingAgent(BaseAgent):
-    def get_opponent(self) -> int:
-        if self._side == 1:
-            return 2
-        else:
-            return 1
-
     def move(self, board: GomokuBoard) -> np.array:
         my_result, my_count = get_greedy_move(board, self._side)
         opponent_result, opponent_count = get_greedy_move(board, self.get_opponent())
