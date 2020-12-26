@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
 
+from gomoku.board import GomokuBoard
+
 class BaseAgent(metaclass=ABCMeta):
     def __init__(self, side):
         self._side = side

@@ -2,7 +2,7 @@ import numpy as np
 import operator
 import random
 
-from .base import BaseAgent
+from gomoku.agent.base import BaseAgent
 
 NUM_REQUIRED = 5
 DIRECTIONS = np.array([[1,0], [1,1], [0,1], [-1,1]])
