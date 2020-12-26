@@ -15,6 +15,7 @@ class GomokuBoard:
     def reset(self):
         self.__board = np.zeros((self.__size, self.__size), np.int8)
         self.__init_blocked_boards()
+        print(self)
 
     def __init_blocked_boards(self):
         # 4xNxN array keeping track of combinations that have been blocked
