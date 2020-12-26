@@ -4,19 +4,19 @@ import numpy as np
 from gomoku.board import GomokuBoard
 
 class BaseAgent(metaclass=ABCMeta):
-    def __init__(self, side):
+    def __init__(self, side: int):
         self._side = side
 
     @abstractmethod
-    def move(self, board):
-        pass
+    def move(self, board: GomokuBoard):
+        raise NotImplementedError("Agent must have move() method")
 
 class RandomAgent(BaseAgent):
-    def move(self, board):
+    def move(self, board: GomokuBoard) -> np.array:
         return np.random.randint(0, board.get_size(), 2)
 
 class ConsoleAgent(BaseAgent):
-    def move(self, board):
+    def move(self, board: GomokuBoard) -> np.array:
         while True:
             print(f'Player {self._side}, type your next move! Format: [x-coord],[y-coord]')
             user_input = input()

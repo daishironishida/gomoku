@@ -3,9 +3,10 @@ import operator
 import random
 
 from gomoku.agent.base import BaseAgent
+from gomoku.board import GomokuBoard
 from gomoku.util import NUM_REQUIRED, DIRECTIONS
 
-def get_greedy_move(board, side):
+def get_greedy_move(board: GomokuBoard, side: int) -> np.array:
     """
     Obtain the best greedy move
     (position which would result in the largest number of pieces in a
@@ -112,18 +113,18 @@ def get_greedy_move(board, side):
     return np.random.randint(0, board.get_size(), 2), 0
 
 class GreedyAgent(BaseAgent):
-    def move(self, board):
+    def move(self, board: GomokuBoard) -> np.array:
         result, _ = get_greedy_move(board, self._side)
         return result
 
 class GreedyDefendingAgent(BaseAgent):
-    def get_opponent(self):
+    def get_opponent(self) -> int:
         if self._side == 1:
             return 2
         else:
             return 1
 
-    def move(self, board):
+    def move(self, board: GomokuBoard) -> np.array:
         my_result, my_count = get_greedy_move(board, self._side)
         opponent_result, opponent_count = get_greedy_move(board, self.get_opponent())
 

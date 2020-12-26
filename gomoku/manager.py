@@ -3,13 +3,13 @@ import numpy as np
 from gomoku.board import GomokuBoard
 
 class GameManager:
-    def __init__(self, size=19):
+    def __init__(self, size: int = 19):
         self.__board = GomokuBoard(size)
 
     def get_board(self):
         return self.__board
 
-    def add_piece(self, coord, side):
+    def add_piece(self, coord, side: int) -> (bool, int, GomokuBoard):
         """
         Place a piece on the board and check ending criteria
 
