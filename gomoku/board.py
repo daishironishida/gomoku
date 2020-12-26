@@ -1,12 +1,11 @@
 import numpy as np
 import sys
 
-class GomokuBoard:
-    __NUM_REQUIRED = 5
-    __DIRECTIONS = np.array([[1,0], [1,1], [0,1], [-1,1]])
+from gomoku.util import NUM_REQUIRED, DIRECTIONS
 
+class GomokuBoard:
     def __init__(self, size):
-        if size < self.__NUM_REQUIRED:
+        if size < NUM_REQUIRED:
             print(f'Invalid size: {size}')
             sys.exit()
         self.__size = size
@@ -38,12 +37,12 @@ class GomokuBoard:
         return self.__board[coord[1], coord[0]]
 
     def check_win(self, coord, side):
-        for direction in self.__DIRECTIONS:
+        for direction in DIRECTIONS:
             piece_count = 0
-            for offset in range(-self.__NUM_REQUIRED+1, self.__NUM_REQUIRED):
+            for offset in range(-NUM_REQUIRED+1, NUM_REQUIRED):
                 if self.get_piece(coord + direction * offset) == side:
                     piece_count += 1
-                    if piece_count == self.__NUM_REQUIRED:
+                    if piece_count == NUM_REQUIRED:
                         return True
                 else:
                     piece_count = 0

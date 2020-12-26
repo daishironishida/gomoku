@@ -3,9 +3,7 @@ import operator
 import random
 
 from gomoku.agent.base import BaseAgent
-
-NUM_REQUIRED = 5
-DIRECTIONS = np.array([[1,0], [1,1], [0,1], [-1,1]])
+from gomoku.util import NUM_REQUIRED, DIRECTIONS
 
 def get_greedy_move(board, side):
     """
