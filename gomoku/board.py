@@ -10,8 +10,10 @@ class GomokuBoard:
             print(f'Invalid size: {size}')
             sys.exit()
         self.__size = size
-        self.__board = np.zeros((self.__size, self.__size), np.int8)
+        self.reset()
 
+    def reset(self):
+        self.__board = np.zeros((self.__size, self.__size), np.int8)
         self.__init_blocked_boards()
 
     def __init_blocked_boards(self):
