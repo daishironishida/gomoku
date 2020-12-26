@@ -114,25 +114,19 @@ def get_greedy_move(board, side):
     return np.random.randint(0, board.get_size(), 2), 0
 
 class GreedyAgent(BaseAgent):
-    def __init__(self, side):
-        self.__side = side
-
     def move(self, board):
-        result, _ = get_greedy_move(board, self.__side)
+        result, _ = get_greedy_move(board, self._side)
         return result
 
 class GreedyDefendingAgent(BaseAgent):
-    def __init__(self, side):
-        self.__side = side
-
     def get_opponent(self):
-        if self.__side == 1:
+        if self._side == 1:
             return 2
         else:
             return 1
 
     def move(self, board):
-        my_result, my_count = get_greedy_move(board, self.__side)
+        my_result, my_count = get_greedy_move(board, self._side)
         opponent_result, opponent_count = get_greedy_move(board, self.get_opponent())
 
         # if agent is closer to winning, make an attacking move

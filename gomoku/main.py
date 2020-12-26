@@ -1,4 +1,6 @@
+import argparse
 import numpy as np
+import sys
 
 from board import GomokuBoard
 from agent.base import BaseAgent, RandomAgent, ConsoleAgent
@@ -47,6 +49,12 @@ class GameManager:
         return True, winner, self.__board
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--size", type=int, default=7, help="number of rows/columns of the board")
+    parser.add_argument("-1", "--agent1", default="console", help="type of agent 1")
+    parser.add_argument("-2", "--agent2", default="console", help="type of agent 2")
+    args = parser.parse_args()
+
     # sample run
     def make_agent_move(game, agent, side):
         board = game.get_board()
@@ -56,14 +64,22 @@ if __name__ == "__main__":
             if success:
                 return winner != 0
 
-    GAME_SIZE = 7
+    def get_agent_class(name):
+        if name == "random":
+            return RandomAgent
+        elif name == "console":
+            return ConsoleAgent
+        elif name == "greedy":
+            return GreedyAgent
+        elif name == "greedy_defender":
+            return GreedyDefendingAgent
+        else:
+            print(f'Invalid agent type: {name}')
+            sys.exit()
 
-    game = GameManager(GAME_SIZE)
-    agent1 = GreedyDefendingAgent(1)
-    agent2 = ConsoleAgent(2)
-
-    assert isinstance(agent1, BaseAgent)
-    assert isinstance(agent2, BaseAgent)
+    game = GameManager(args.size)
+    agent1 = get_agent_class(args.agent1)(1)
+    agent2 = get_agent_class(args.agent2)(2)
 
     while True:
         if make_agent_move(game, agent1, 1):
