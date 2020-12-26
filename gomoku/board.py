@@ -12,6 +12,23 @@ class GomokuBoard:
         self.__size = size
         self.__board = np.zeros((self.__size, self.__size), np.int8)
 
+        self.__init_blocked_boards()
+
+    def __init_blocked_boards(self):
+        # 4xNxN array keeping track of combinations that have been blocked
+        # when this is all True no side can win and the game is a tie
+        self.__blocked_black = np.zeros((4, self.__size, self.__size), bool)
+        self.__blocked_white = np.zeros((4, self.__size, self.__size), bool)
+
+        # first eliminate combinations that are invalid to start with
+        for row in range(self.__size):
+            for col in range(self.__size):
+                for dir_idx, direction in enumerate(DIRECTIONS):
+                    base = np.array([col, row]) + direction * (NUM_REQUIRED - 1)
+                    if not self.is_on_board(base):
+                        self.__blocked_black[dir_idx, row, col] = True
+                        self.__blocked_white[dir_idx, row, col] = True
+
     def get_board(self) -> np.array:
         return self.__board
 
@@ -25,9 +42,20 @@ class GomokuBoard:
             print(f'Invalid coordinate: {coord}')
             return False
 
+        # place piece on board
         print(f'Placing {side} at {coord}')
         self.__board[coord[1], coord[0]] = side.value
         print(self)
+
+        # update blocked boards
+        for dir_idx, direction in enumerate(DIRECTIONS):
+            for offset in range(NUM_REQUIRED):
+                base = np.array(coord) - direction * offset
+                if self.is_on_board(base):
+                    if side == Side.BLACK:
+                        self.__blocked_black[dir_idx, base[1], base[0]] = True
+                    else:
+                        self.__blocked_white[dir_idx, base[1], base[0]] = True
         return True
 
     def is_on_board(self, coord: np.array) -> bool:
@@ -56,7 +84,7 @@ class GomokuBoard:
         return False
 
     def check_tie(self) -> bool:
-        return np.all(self.__board != 0)
+        return np.all(self.__blocked_black) and np.all(self.__blocked_white)
 
     def __repr__(self) -> str:
         return str(self.__board)

@@ -75,7 +75,7 @@ def get_greedy_move(board: GomokuBoard, side: int) -> np.array:
                         combinations[dir_idx, row, col] += 32 + (1 << offset)
                     # if opponent's piece is found, or the slot is invalid,
                     # update value to -1
-                    elif not board.is_on_board(base) or board.get_piece(base) > 0:
+                    elif not board.is_on_board(base) or board.get_piece(base).is_player():
                         combinations[dir_idx, row, col] = -1
                         break
 
