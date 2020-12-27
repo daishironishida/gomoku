@@ -92,7 +92,7 @@ class GameManager:
             if success:
                 return winner != Side.NONE
 
-    def run_game(self, agent_name1: str, agent_name2: str, output: bool=False):
+    def run_game(self, agent_name1: str, agent_name2: str, output: bool, path: str):
         """
         Run a game between two agents
 
@@ -104,12 +104,14 @@ class GameManager:
             name of agent to play white
         output : bool
             whether to output moves to csv
+        path : str
+            directory of output csv file
         """
         self.reset_game()
 
         stream = None
         if output:
-            stream = CsvStream('data/output', self.__board.get_size())
+            stream = CsvStream(path, self.__board.get_size())
 
         agent1 = self.get_agent_class(agent_name1)(Side(1))
         agent2 = self.get_agent_class(agent_name2)(Side(2))
