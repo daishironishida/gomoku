@@ -11,9 +11,10 @@ if __name__ == "__main__":
     parser.add_argument("-1", "--agent1", default="console", help="type of agent 1")
     parser.add_argument("-2", "--agent2", default="console", help="type of agent 2")
     parser.add_argument("-r", "--runs", type=int, default=1, help="number of runs")
+    parser.add_argument("-o", "--output", action='store_true', help="output moves to csv file")
     args = parser.parse_args()
 
     # sample run
     game = GameManager(args.size)
     for _ in range(args.runs):
-        game.run_game(args.agent1, args.agent2)
+        game.run_game(args.agent1, args.agent2, args.output)

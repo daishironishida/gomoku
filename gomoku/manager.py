@@ -4,7 +4,7 @@ import sys
 from gomoku.agent.base import BaseAgent, RandomAgent, ConsoleAgent
 from gomoku.agent.greedy import GreedyAgent, GreedyDefendingAgent
 from gomoku.board import GomokuBoard
-from gomoku.util import Side
+from gomoku.util import CsvStream, Side
 
 class GameManager:
     def __init__(self, size: int = 19):
@@ -66,7 +66,7 @@ class GameManager:
 
         return True, winner, self.__board
 
-    def make_agent_move(self, agent: BaseAgent, side: Side) -> bool:
+    def make_agent_move(self, agent: BaseAgent, side: Side, stream: CsvStream = None) -> bool:
         """
         Have an agent make a move
 
@@ -76,6 +76,8 @@ class GameManager:
             agent to make the move
         side : int
             side of the agent
+        stream : CsvStream
+            stream to output moves
 
         Returns
         -------
@@ -84,11 +86,13 @@ class GameManager:
         """
         while True:
             move = agent.move(self.__board)
-            success, winner, _ = self.add_piece(move, side)
+            success, winner, board = self.add_piece(move, side)
+            if stream:
+                stream.add_move(side, move, board.get_board(), winner)
             if success:
                 return winner != Side.NONE
 
-    def run_game(self, agent_name1, agent_name2):
+    def run_game(self, agent_name1: str, agent_name2: str, output: bool=False):
         """
         Run a game between two agents
 
@@ -98,15 +102,21 @@ class GameManager:
             name of agent to play black
         agent_name2 : str
             name of agent to play white
+        output : bool
+            whether to output moves to csv
         """
         self.reset_game()
+
+        stream = None
+        if output:
+            stream = CsvStream('data/output', self.__board.get_size())
 
         agent1 = self.get_agent_class(agent_name1)(Side(1))
         agent2 = self.get_agent_class(agent_name2)(Side(2))
 
         while True:
-            if self.make_agent_move(agent1, Side(1)):
+            if self.make_agent_move(agent1, Side(1), stream):
                 break
-            if self.make_agent_move(agent2, Side(2)):
+            if self.make_agent_move(agent2, Side(2), stream):
                 break
         print('Game done')
