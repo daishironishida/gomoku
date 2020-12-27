@@ -26,6 +26,9 @@ class GameManager:
             print(f'Invalid agent type: {name}')
             sys.exit()
 
+    def reset_game(self):
+        self.__board.reset()
+
     def add_piece(self, coord: np.array, side: Side) -> (bool, Side, GomokuBoard):
         """
         Place a piece on the board and check ending criteria
@@ -96,6 +99,8 @@ class GameManager:
         agent_name2 : str
             name of agent to play white
         """
+        self.reset_game()
+
         agent1 = self.get_agent_class(agent_name1)(Side(1))
         agent2 = self.get_agent_class(agent_name2)(Side(2))
 

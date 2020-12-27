@@ -10,8 +10,10 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--size", type=int, default=7, help="number of rows/columns of the board")
     parser.add_argument("-1", "--agent1", default="console", help="type of agent 1")
     parser.add_argument("-2", "--agent2", default="console", help="type of agent 2")
+    parser.add_argument("-r", "--runs", type=int, default=1, help="number of runs")
     args = parser.parse_args()
 
     # sample run
     game = GameManager(args.size)
-    game.run_game(args.agent1, args.agent2)
+    for _ in range(args.runs):
+        game.run_game(args.agent1, args.agent2)
