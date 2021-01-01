@@ -108,8 +108,7 @@ def get_greedy_move(board: GomokuBoard, side: int) -> np.array:
             # return randomly from most prevalent moves
             return np.array(random.choice(max_moves)), piece_count + 1
 
-    # fallback: should not reach
-    print('Fallback: return random value')
+    # fallback: should only reach when player cannot win any more
     return np.random.randint(0, board.get_size(), 2), 0
 
 class GreedyAgent(BaseAgent):
