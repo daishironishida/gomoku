@@ -7,8 +7,9 @@ from gomoku.board import GomokuBoard
 from gomoku.util import CsvStream, Side
 
 class GameManager:
-    def __init__(self, size: int = 19):
-        self.__board = GomokuBoard(size)
+    def __init__(self, size: int = 19, quiet: bool = False):
+        self.__board = GomokuBoard(size, quiet)
+        self.__quiet = quiet
 
     def get_board(self):
         return self.__board
@@ -57,10 +58,12 @@ class GameManager:
 
         if self.__board.check_win(coord, side):
             winner = side
-            print(f'{side} wins!')
+            if not self.__quiet:
+                print(f'{side} wins!')
         elif self.__board.check_tie():
             winner = Side.TIE
-            print('game tied!')
+            if not self.__quiet:
+                print('game tied!')
         else:
             winner = Side.NONE
 
@@ -121,4 +124,5 @@ class GameManager:
                 break
             if self.make_agent_move(agent2, Side(2), stream):
                 break
-        print('Game done')
+        if not self.__quiet:
+            print('Game done')
