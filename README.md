@@ -2,7 +2,14 @@
 
 ## Requirements
 
-Python >= 3.6
+- Python >= 3.6
+- numpy
+- tqdm
+
+Running the notebooks requires:
+
+- pandas
+
 
 ## Run
 

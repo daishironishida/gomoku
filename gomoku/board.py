@@ -5,17 +5,19 @@ from gomoku.util import NUM_REQUIRED, DIRECTIONS
 from gomoku.util import Side
 
 class GomokuBoard:
-    def __init__(self, size: int):
+    def __init__(self, size: int, quiet: bool):
         if size < NUM_REQUIRED:
             print(f'Invalid size: {size}')
             sys.exit()
         self.__size = size
+        self.__quiet = quiet
         self.reset()
 
     def reset(self):
         self.__board = np.zeros((self.__size, self.__size), np.int8)
         self.__init_blocked_boards()
-        print(self)
+        if not self.__quiet:
+            print(self)
 
     def __init_blocked_boards(self):
         # 4xNxN array keeping track of combinations that have been blocked
@@ -46,9 +48,10 @@ class GomokuBoard:
             return False
 
         # place piece on board
-        print(f'Placing {side} at {coord}')
         self.__board[coord[1], coord[0]] = side.value
-        print(self)
+        if not self.__quiet:
+            print(f'Placed {side} at {coord}')
+            print(self)
 
         # update blocked boards
         for dir_idx, direction in enumerate(DIRECTIONS):

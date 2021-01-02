@@ -7,8 +7,9 @@ from gomoku.board import GomokuBoard
 from gomoku.util import CsvStream, Side
 
 class GameManager:
-    def __init__(self, size: int = 19):
-        self.__board = GomokuBoard(size)
+    def __init__(self, size: int = 19, quiet: bool = False):
+        self.__board = GomokuBoard(size, quiet)
+        self.__quiet = quiet
 
     def get_board(self):
         return self.__board
@@ -57,10 +58,12 @@ class GameManager:
 
         if self.__board.check_win(coord, side):
             winner = side
-            print(f'{side} wins!')
+            if not self.__quiet:
+                print(f'{side} wins!')
         elif self.__board.check_tie():
             winner = Side.TIE
-            print('game tied!')
+            if not self.__quiet:
+                print('game tied!')
         else:
             winner = Side.NONE
 
@@ -81,8 +84,8 @@ class GameManager:
 
         Returns
         -------
-        game_ended: bool
-            whether the game has ended after the move
+        winner: int
+            winning side if it exists, -1 if tied, 0 otherwise
         """
         while True:
             move = agent.move(self.__board)
@@ -90,9 +93,9 @@ class GameManager:
             if stream:
                 stream.add_move(side, move, board.get_board(), winner)
             if success:
-                return winner != Side.NONE
+                return winner
 
-    def run_game(self, agent_name1: str, agent_name2: str, output: bool, path: str):
+    def run_game(self, agent_name1: str, agent_name2: str, output: bool = False, path: str = None):
         """
         Run a game between two agents
 
@@ -106,7 +109,15 @@ class GameManager:
             whether to output moves to csv
         path : str
             directory of output csv file
+
+        Returns
+        -------
+        winner: int
+            winning side if it exists, -1 if tied, 0 otherwise
         """
+        if output:
+            assert path is not None
+
         self.reset_game()
 
         stream = None
@@ -117,8 +128,12 @@ class GameManager:
         agent2 = self.get_agent_class(agent_name2)(Side(2))
 
         while True:
-            if self.make_agent_move(agent1, Side(1), stream):
+            winner = self.make_agent_move(agent1, Side(1), stream)
+            if winner != Side.NONE:
                 break
-            if self.make_agent_move(agent2, Side(2), stream):
+            winner = self.make_agent_move(agent2, Side(2), stream)
+            if winner != Side.NONE:
                 break
-        print('Game done')
+        if not self.__quiet:
+            print('Game done')
+        return winner

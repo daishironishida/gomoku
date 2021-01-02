@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
+import random
 
 from gomoku.board import GomokuBoard
 from gomoku.util import Side
@@ -18,7 +19,7 @@ class BaseAgent(metaclass=ABCMeta):
 
 class RandomAgent(BaseAgent):
     def move(self, board: GomokuBoard) -> np.array:
-        return np.random.randint(0, board.get_size(), 2)
+        return np.flip(random.choice(np.array(np.where(board.get_board() == 0)).T))
 
 class ConsoleAgent(BaseAgent):
     def move(self, board: GomokuBoard) -> np.array:

@@ -39,7 +39,7 @@ class Side(Enum):
 class CsvStream():
     def __init__(self, directory: str, size: int):
         os.makedirs(directory, exist_ok=True)
-        self.__file = os.path.join(directory, datetime.now().strftime('%y%m%d%H%M%S'))
+        self.__file = os.path.join(directory, datetime.now().strftime('%y%m%d%H%M%S.csv'))
 
         with open(self.__file, 'w') as f:
             f.write(f'{size}\n')
