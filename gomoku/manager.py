@@ -84,8 +84,8 @@ class GameManager:
 
         Returns
         -------
-        game_ended: bool
-            whether the game has ended after the move
+        winner: int
+            winning side if it exists, -1 if tied, 0 otherwise
         """
         while True:
             move = agent.move(self.__board)
@@ -93,7 +93,7 @@ class GameManager:
             if stream:
                 stream.add_move(side, move, board.get_board(), winner)
             if success:
-                return winner != Side.NONE
+                return winner
 
     def run_game(self, agent_name1: str, agent_name2: str, output: bool, path: str):
         """
@@ -109,6 +109,11 @@ class GameManager:
             whether to output moves to csv
         path : str
             directory of output csv file
+
+        Returns
+        -------
+        winner: int
+            winning side if it exists, -1 if tied, 0 otherwise
         """
         self.reset_game()
 
@@ -120,9 +125,12 @@ class GameManager:
         agent2 = self.get_agent_class(agent_name2)(Side(2))
 
         while True:
-            if self.make_agent_move(agent1, Side(1), stream):
+            winner = self.make_agent_move(agent1, Side(1), stream)
+            if winner != Side.NONE:
                 break
-            if self.make_agent_move(agent2, Side(2), stream):
+            winner = self.make_agent_move(agent2, Side(2), stream)
+            if winner != Side.NONE:
                 break
         if not self.__quiet:
             print('Game done')
+        return winner
