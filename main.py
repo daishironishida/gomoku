@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+from tqdm import tqdm
 
 from gomoku.board import GomokuBoard
 from gomoku.manager import GameManager
@@ -18,5 +19,5 @@ if __name__ == "__main__":
 
     # sample run
     game = GameManager(size=args.size, quiet=args.quiet)
-    for _ in range(args.runs):
+    for _ in tqdm(range(args.runs), disable=not args.quiet):
         game.run_game(args.agent1, args.agent2, args.output, args.path)
