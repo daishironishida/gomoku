@@ -95,7 +95,7 @@ class GameManager:
             if success:
                 return winner
 
-    def run_game(self, agent_name1: str, agent_name2: str, output: bool, path: str):
+    def run_game(self, agent_name1: str, agent_name2: str, output: bool = False, path: str = None):
         """
         Run a game between two agents
 
@@ -115,6 +115,9 @@ class GameManager:
         winner: int
             winning side if it exists, -1 if tied, 0 otherwise
         """
+        if output:
+            assert path is not None
+
         self.reset_game()
 
         stream = None
