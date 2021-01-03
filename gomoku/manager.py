@@ -95,6 +95,48 @@ class GameManager:
             if success:
                 return winner
 
+
+    def run_game_custom(self, agent1: BaseAgent, agent2: BaseAgent, output: bool = False, path: str = None):
+        """
+        Run a game between two agents
+
+        Parameters
+        ----------
+        agent_name1 : BaseAgent
+            agent initialized to play black
+        agent_name2 : BaseAgent
+            agent initialized to play white
+        output : bool
+            whether to output moves to csv
+        path : str
+            directory of output csv file
+
+        Returns
+        -------
+        winner: int
+            winning side if it exists, -1 if tied, 0 otherwise
+        """
+        if output:
+            assert path is not None
+
+        self.reset_game()
+
+        stream = None
+        if output:
+            stream = CsvStream(path, self.__board.get_size())
+
+        while True:
+            winner = self.make_agent_move(agent1, Side(1), stream)
+            if winner != Side.NONE:
+                break
+            winner = self.make_agent_move(agent2, Side(2), stream)
+            if winner != Side.NONE:
+                break
+        if not self.__quiet:
+            print('Game done')
+        return winner
+
+
     def run_game(self, agent_name1: str, agent_name2: str, output: bool = False, path: str = None):
         """
         Run a game between two agents
@@ -115,25 +157,6 @@ class GameManager:
         winner: int
             winning side if it exists, -1 if tied, 0 otherwise
         """
-        if output:
-            assert path is not None
-
-        self.reset_game()
-
-        stream = None
-        if output:
-            stream = CsvStream(path, self.__board.get_size())
-
         agent1 = self.get_agent_class(agent_name1)(Side(1))
         agent2 = self.get_agent_class(agent_name2)(Side(2))
-
-        while True:
-            winner = self.make_agent_move(agent1, Side(1), stream)
-            if winner != Side.NONE:
-                break
-            winner = self.make_agent_move(agent2, Side(2), stream)
-            if winner != Side.NONE:
-                break
-        if not self.__quiet:
-            print('Game done')
-        return winner
+        return self.run_game_custom(agent1, agent2, output, path)
