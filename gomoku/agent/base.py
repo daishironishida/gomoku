@@ -6,9 +6,15 @@ from gomoku.board import GomokuBoard
 from gomoku.util import Side
 
 class BaseAgent(metaclass=ABCMeta):
-    def __init__(self, side: Side):
+    def __init__(self, side: Side = Side.BLACK):
+        self.set_side(side)
+
+    def set_side(self, side: Side):
         assert side.is_player()
         self._side = side
+
+    def get_side(self) -> Side:
+        return self._side
 
     @abstractmethod
     def move(self, board: GomokuBoard):
