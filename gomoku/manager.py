@@ -69,7 +69,7 @@ class GameManager:
 
         return True, winner, self.__board
 
-    def make_agent_move(self, agent: BaseAgent, side: Side, stream: CsvStream = None) -> bool:
+    def make_agent_move(self, agent: BaseAgent, stream: CsvStream = None) -> bool:
         """
         Have an agent make a move
 
@@ -77,8 +77,6 @@ class GameManager:
         ----------
         agent : BaseAgent
             agent to make the move
-        side : int
-            side of the agent
         stream : CsvStream
             stream to output moves
 
@@ -89,7 +87,7 @@ class GameManager:
         """
         while True:
             move = agent.move(self.__board)
-            success, winner, board = self.add_piece(move, side)
+            success, winner, board = self.add_piece(move, agent.get_side())
             if stream:
                 stream.add_move(side, move, board.get_board(), winner)
             if success:
@@ -102,10 +100,10 @@ class GameManager:
 
         Parameters
         ----------
-        agent_name1 : BaseAgent
-            agent initialized to play black
-        agent_name2 : BaseAgent
-            agent initialized to play white
+        agent1 : BaseAgent
+            agent to play black
+        agent2 : BaseAgent
+            agent to play white
         output : bool
             whether to output moves to csv
         path : str
@@ -125,11 +123,14 @@ class GameManager:
         if output:
             stream = CsvStream(path, self.__board.get_size())
 
+        agent1.set_side(Side.BLACK)
+        agent2.set_side(Side.WHITE)
+
         while True:
-            winner = self.make_agent_move(agent1, Side(1), stream)
+            winner = self.make_agent_move(agent1, stream)
             if winner != Side.NONE:
                 break
-            winner = self.make_agent_move(agent2, Side(2), stream)
+            winner = self.make_agent_move(agent2, stream)
             if winner != Side.NONE:
                 break
         if not self.__quiet:
@@ -157,6 +158,6 @@ class GameManager:
         winner: int
             winning side if it exists, -1 if tied, 0 otherwise
         """
-        agent1 = self.get_agent_class(agent_name1)(Side(1))
-        agent2 = self.get_agent_class(agent_name2)(Side(2))
+        agent1 = self.get_agent_class(agent_name1)()
+        agent2 = self.get_agent_class(agent_name2)()
         return self.run_game_custom(agent1, agent2, output, path)
