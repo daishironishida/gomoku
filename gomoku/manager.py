@@ -7,6 +7,9 @@ from gomoku.board import GomokuBoard
 from gomoku.util import CsvStream, Side
 
 class GameManager:
+
+    NUM_RETRIES = 10
+
     def __init__(self, size: int = 19, quiet: bool = False):
         self.__board = GomokuBoard(size, quiet)
         self.__quiet = quiet
@@ -86,10 +89,18 @@ class GameManager:
             winning side if it exists, -1 if tied, 0 otherwise
         """
         while True:
-            move = agent.move(self.__board)
-            success, winner, board = self.add_piece(move, agent.get_side())
+            for num_try in range(self.NUM_RETRIES):
+                move = agent.move(self.__board)
+                if self.__board.is_valid_move(move):
+                    break
+
+            if num_try == self.NUM_RETRIES - 1:
+                print(f'{agent.get_side()} failed to find a valid move')
+                return agent.get_opponent()
+
+            success, winner, _ = self.add_piece(move, agent.get_side())
             if stream:
-                stream.add_move(side, move, board.get_board(), winner)
+                stream.add_move(side, move, self.__board.get_board(), winner)
             if success:
                 return winner
 
