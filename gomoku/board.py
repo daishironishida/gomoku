@@ -43,7 +43,7 @@ class GomokuBoard:
     def add_piece(self, coord: np.array, side: Side) -> bool:
         assert side.is_player()
 
-        if not self.is_on_board(coord) or self.get_piece(coord).is_player():
+        if not self.is_valid_move(coord):
             print(f'Invalid coordinate: {coord}')
             return False
 
@@ -67,6 +67,9 @@ class GomokuBoard:
     def is_on_board(self, coord: np.array) -> bool:
         return coord[0] >= 0 and coord[0] < self.__size \
             and coord[1] >= 0 and coord[1] < self.__size
+
+    def is_valid_move(self, coord: np.array) -> bool:
+        return self.is_on_board(coord) and not self.get_piece(coord).is_player()
 
     def get_piece(self, coord: np.array) -> Side:
         if not self.is_on_board(coord):
