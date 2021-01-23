@@ -100,7 +100,7 @@ class GameManager:
 
             success, winner, _ = self.add_piece(move, agent.get_side())
             if stream:
-                stream.add_move(side, move, self.__board.get_board(), winner)
+                stream.add_move(agent.get_side(), move, self.__board.get_board(), winner)
             if success:
                 return winner
 
