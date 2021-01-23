@@ -29,7 +29,7 @@ class GomokuBoard:
         for row in range(self.__size):
             for col in range(self.__size):
                 for dir_idx, direction in enumerate(DIRECTIONS):
-                    base = np.array([col, row]) + direction * (NUM_REQUIRED - 1)
+                    base = np.array([row, col]) + direction * (NUM_REQUIRED - 1)
                     if not self.is_on_board(base):
                         self.__blocked_black[dir_idx, row, col] = True
                         self.__blocked_white[dir_idx, row, col] = True
@@ -48,7 +48,7 @@ class GomokuBoard:
             return False
 
         # place piece on board
-        self.__board[coord[1], coord[0]] = side.value
+        self.__board[coord[0], coord[1]] = side.value
         if not self.__quiet:
             print(f'Placed {side} at {coord}')
             print(self)
@@ -59,9 +59,9 @@ class GomokuBoard:
                 base = np.array(coord) - direction * offset
                 if self.is_on_board(base):
                     if side == Side.BLACK:
-                        self.__blocked_black[dir_idx, base[1], base[0]] = True
+                        self.__blocked_black[dir_idx, base[0], base[1]] = True
                     else:
-                        self.__blocked_white[dir_idx, base[1], base[0]] = True
+                        self.__blocked_white[dir_idx, base[0], base[1]] = True
         return True
 
     def is_on_board(self, coord: np.array) -> bool:
@@ -74,7 +74,7 @@ class GomokuBoard:
     def get_piece(self, coord: np.array) -> Side:
         if not self.is_on_board(coord):
             return Side.NONE
-        result = Side(self.__board[coord[1], coord[0]])
+        result = Side(self.__board[coord[0], coord[1]])
         assert result.is_piece()
         return result
 

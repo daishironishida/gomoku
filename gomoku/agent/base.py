@@ -25,15 +25,15 @@ class BaseAgent(metaclass=ABCMeta):
 
 class RandomAgent(BaseAgent):
     def move(self, board: GomokuBoard) -> np.array:
-        return np.flip(random.choice(np.array(np.where(board.get_board() == 0)).T))
+        return random.choice(np.array(np.where(board.get_board() == 0)).T)
 
 class ConsoleAgent(BaseAgent):
     def move(self, board: GomokuBoard) -> np.array:
         while True:
-            print(f'Player {self._side}, type your next move! Format: [x-coord],[y-coord]')
+            print(f'Player {self._side}, type your next move! Format: [row],[column]')
             user_input = input()
             try:
                 coords = str(user_input).split(',')
                 return np.array([int(coords[0]), int(coords[1])])
             except:
-                print('Invalid input! Format: [x-coord],[y-coord]')
+                print('Invalid input! Format: [row],[column]')
