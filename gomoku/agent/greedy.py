@@ -109,7 +109,7 @@ def get_greedy_move(board: GomokuBoard, side: int) -> np.array:
             return np.array(random.choice(max_moves)), piece_count + 1
 
     # fallback: should only reach when player cannot win any more
-    return random.choice(np.array(np.where(board.get_board() == 0)).T), 0
+    return random.choice(board.get_valid_moves()), 0
 
 class GreedyAgent(BaseAgent):
     def move(self, board: GomokuBoard) -> np.array:

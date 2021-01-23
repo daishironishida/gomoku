@@ -25,7 +25,7 @@ class BaseAgent(metaclass=ABCMeta):
 
 class RandomAgent(BaseAgent):
     def move(self, board: GomokuBoard) -> np.array:
-        return random.choice(np.array(np.where(board.get_board() == 0)).T)
+        return random.choice(board.get_valid_moves())
 
 class ConsoleAgent(BaseAgent):
     def move(self, board: GomokuBoard) -> np.array:

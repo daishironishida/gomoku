@@ -71,6 +71,9 @@ class GomokuBoard:
     def is_valid_move(self, coord: np.array) -> bool:
         return self.is_on_board(coord) and not self.get_piece(coord).is_player()
 
+    def get_valid_moves(self) -> np.array:
+        return np.array(np.where(self.__board == Side.NONE.value)).T
+
     def get_piece(self, coord: np.array) -> Side:
         if not self.is_on_board(coord):
             return Side.NONE
