@@ -2,6 +2,7 @@ from enum import Enum
 import numpy as np
 import os
 from datetime import datetime
+import uuid
 
 # number of pieces in a row for win
 NUM_REQUIRED = 5
@@ -39,7 +40,8 @@ class Side(Enum):
 class CsvStream():
     def __init__(self, directory: str, size: int):
         os.makedirs(directory, exist_ok=True)
-        self.__file = os.path.join(directory, datetime.now().strftime('%y%m%d%H%M%S.csv'))
+        filename = datetime.now().strftime('%y%m%d%H%M%S-') + str(uuid.uuid4()) + '.csv' # avoid collision
+        self.__file = os.path.join(directory, filename)
 
         with open(self.__file, 'w') as f:
             f.write(f'{size}\n')
@@ -48,7 +50,7 @@ class CsvStream():
         assert(side.is_player())
 
         with open(self.__file, 'a') as f:
-            f.write(f'{side.value},{coord[1]},{coord[0]}\n')
+            f.write(f'{side.value},{coord[0]},{coord[1]}\n')
             for row in board:
                 f.write(','.join([str(x) for x in row]) + '\n')
             f.write(f'{winner.value}\n')

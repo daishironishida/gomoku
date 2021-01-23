@@ -4,11 +4,13 @@
 
 - Python >= 3.6
 - numpy
+- torch
 - tqdm
 
-Running the notebooks requires:
+Running the notebooks also requires:
 
 - pandas
+- torchvision
 
 
 ## Run
