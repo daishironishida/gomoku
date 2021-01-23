@@ -35,8 +35,8 @@ def get_greedy_move(board: GomokuBoard, side: int) -> np.array:
     in four directions (horizontal, vertical, and two diagonals).
 
     These slots are represented by a 4xNxN array, where N is the size
-    of the board. Each value (i,x,y) represents a slot starting at
-    (x,y) going in the ith direction. (Note that some of these slots
+    of the board. Each value (i,r,c) represents a slot starting at
+    (r,c) going in the ith direction. (Note that some of these slots
     are invalid since parts of the slot go off the board.)
 
     The value of this array, represented in bits, consists of two parts.
@@ -68,7 +68,7 @@ def get_greedy_move(board: GomokuBoard, side: int) -> np.array:
         for col in range(board.get_size()):
             for dir_idx, direction in enumerate(DIRECTIONS):
                 for offset in range(NUM_REQUIRED):
-                    base = np.array([col, row]) + direction * offset
+                    base = np.array([row, col]) + direction * offset
 
                     # if agent's piece is found, add 32 and raise flag
                     if board.get_piece(base) == side:
@@ -89,7 +89,7 @@ def get_greedy_move(board: GomokuBoard, side: int) -> np.array:
             for offset in range(5):
                 # find a remaining coordinate from the slot
                 if flags & (1 << offset) == 0:
-                    coord = np.array([col, row]) + offset * DIRECTIONS[dir]
+                    coord = np.array([row, col]) + offset * DIRECTIONS[dir]
                     potential_moves.append(coord)
 
         if potential_moves:
@@ -109,7 +109,7 @@ def get_greedy_move(board: GomokuBoard, side: int) -> np.array:
             return np.array(random.choice(max_moves)), piece_count + 1
 
     # fallback: should only reach when player cannot win any more
-    return np.flip(random.choice(np.array(np.where(board.get_board() == 0)).T)), 0
+    return random.choice(board.get_valid_moves()), 0
 
 class GreedyAgent(BaseAgent):
     def move(self, board: GomokuBoard) -> np.array:
